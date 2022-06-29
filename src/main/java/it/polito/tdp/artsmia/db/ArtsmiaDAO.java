@@ -69,7 +69,8 @@ public class ArtsmiaDAO {
 	
 	public List<String> ruoli(){
 		String sql = "SELECT DISTINCT(role) AS r "
-				+ "FROM authorship";
+				+ "FROM authorship "
+				+ "ORDER BY role";
 		List<String> result = new ArrayList<>();
 		Connection conn = DBConnect.getConnection();
 

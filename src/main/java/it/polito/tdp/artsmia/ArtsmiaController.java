@@ -1,10 +1,12 @@
 package it.polito.tdp.artsmia;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.artsmia.db.ArtsmiaDAO;
 import it.polito.tdp.artsmia.model.Adiacenza;
+import it.polito.tdp.artsmia.model.Artist;
 import it.polito.tdp.artsmia.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -62,6 +64,24 @@ public class ArtsmiaController {
     void doCalcolaPercorso(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Calcola percorso");
+    	int x;
+    	try {
+        	x=Integer.parseInt(txtArtista.getText());
+        	
+        }
+        catch(NumberFormatException e) {
+        	txtResult.appendText("Inserire valore numerico");
+        	return;
+        }
+    	if(this.model.isPresente(x)==false)
+    		txtResult.appendText("\n Artista non presente");
+    	else {
+    		List<Artist> ris=this.model.cercaCammino(x);
+    		for(Artist a:ris) {
+    			txtResult.appendText("\n"+a.getId()+"  "+a.getNome());
+    		}
+    		txtResult.appendText("\n"+this.model.calcolaPeso(ris));
+    	}
     }
 
     @FXML

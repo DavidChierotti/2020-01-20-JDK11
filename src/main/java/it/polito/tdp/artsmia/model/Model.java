@@ -17,6 +17,8 @@ public class Model {
 	private ArtsmiaDAO dao;
 	private SimpleWeightedGraph<Artist,DefaultWeightedEdge> grafo;
 	private Map<Integer,Artist> artisti;
+	private List<Artist> migliore;
+	private double peso;
 	
 	
 	public Model() {
@@ -53,6 +55,81 @@ public class Model {
 		}
 		Collections.sort(ritorno);
 		return ritorno;
+	}
+
+	public boolean isPresente(int i) {
+		boolean ritorno=false;
+		if(grafo.vertexSet().contains(artisti.get(i)))
+			ritorno=true;
+		return ritorno;
+	}
+
+	
+	public List<Artist> cercaCammino(int id){
+		Artist partenza=artisti.get(id);
+		
+		migliore=new ArrayList<>();
+		
+		List<Artist> parziale=new ArrayList<>();
+		
+		parziale.add(partenza);
+		this.cerca(parziale);
+		
+		return migliore;
+	}
+
+	private void cerca(List<Artist> parziale) {
+		if(this.calcolaPeso(parziale)>this.calcolaPeso(migliore)) {
+			migliore=new ArrayList<>(parziale);
+		}
+		peso=0;
+		if(parziale.size()>=2) {
+		DefaultWeightedEdge e=grafo.getEdge(parziale.get(0),parziale.get(1));
+		peso=grafo.getEdgeWeight(e);
+		}
+		List<Artist> possibili=new ArrayList<>(this.possibili(parziale,peso));
+		for(Artist a: possibili ) {
+			parziale.add(a);
+			this.cerca(parziale);
+			parziale.remove(a);
+		}
+		
+		
+	}
+	
+	public double calcolaPeso(List<Artist> parziale) {
+		double tot=0;
+		if(parziale.size()>1) {
+		for(int i=1;i<parziale.size();i++) {
+			DefaultWeightedEdge e=grafo.getEdge(parziale.get(i-1),parziale.get(i));
+			tot+=grafo.getEdgeWeight(e);
+		}
+	}
+		return tot;
+		
+	}
+	
+	private List<Artist> possibili(List<Artist> parziale,double peso){
+        List<Artist> possibili=new ArrayList<>();
+		
+		Artist a=parziale.get(parziale.size()-1);
+		
+		for(Artist aa:Graphs.neighborListOf(grafo,a)) {
+			DefaultWeightedEdge e=grafo.getEdge(a,aa);
+			if(parziale.size()>1) {
+			if(!parziale.contains(aa)&&grafo.getEdgeWeight(e)==peso) {
+				possibili.add(aa);
+			}
+			
+		  }
+			else {
+				if(!parziale.contains(aa)) {
+					possibili.add(aa);
+				}
+			}
+		}
+		
+		return possibili;
 	}
 
 
